@@ -4,14 +4,47 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+import { useState } from "react";
 
 export const Route = createLazyFileRoute("/register")({
   component: Register,
 });
 
 function Register() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [profilePicture, setProfilePicture] = useState("");
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (password != confirmPassword) {
+      alert("Passwords do not match");
+    }
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("profilePicture", profilePicture);
+
+    const response = await fetch("http://localhost:4000/auth/register", {
+      method: "POST",
+      body: formData,
+    });
+    const result = await response.json();
+    if (result.success) {
+      localStorage.setItem("token", result.data.data.token);
+      console.log(result);
+      alert(result.data.message);
+      return;
+    }
+
+    alert(result.errors);
+  };
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div className="d-flex justify-content-center align-items-center vh-100 ">
       <div style={{ maxWidth: "650px", width: "100%" }}>
         <Card className="shadow-lg">
           <Card.Header className="text-center bg-success text-white fs-4 fw-bold">
@@ -21,14 +54,21 @@ function Register() {
             <Card.Title className="text-center fs-5 mb-4">
               Create Your Account
             </Card.Title>
-            <Form>
+            <Form onSubmit={onSubmit}>
               {/* Name */}
               <Form.Group as={Row} className="mb-3" controlId="formName">
                 <Form.Label column sm="4" className="fw-semibold">
                   Name
                 </Form.Label>
                 <Col sm="8">
-                  <Form.Control type="text" placeholder="Enter name" />
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter name"
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                    }}
+                  />
                 </Col>
               </Form.Group>
 
@@ -38,7 +78,14 @@ function Register() {
                   Email
                 </Form.Label>
                 <Col sm="8">
-                  <Form.Control type="email" placeholder="Enter email" />
+                  <Form.Control
+                    type="email"
+                    placeholder="Enter email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
+                  />
                 </Col>
               </Form.Group>
 
@@ -48,7 +95,14 @@ function Register() {
                   Password
                 </Form.Label>
                 <Col sm="8">
-                  <Form.Control type="password" placeholder="Enter password" />
+                  <Form.Control
+                    type="password"
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                    }}
+                  />
                 </Col>
               </Form.Group>
 
@@ -65,6 +119,10 @@ function Register() {
                   <Form.Control
                     type="password"
                     placeholder="Confirm password"
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                    }}
                   />
                 </Col>
               </Form.Group>
@@ -79,7 +137,15 @@ function Register() {
                   Profile Picture
                 </Form.Label>
                 <Col sm="8">
-                  <Form.Control type="file" />
+                  <Form.Control
+                    type="file"
+                    placeholder="Choose File"
+                    required
+                    onChange={(e) => {
+                      setProfilePicture(e.target.files[0]);
+                    }}
+                    accept=".jpg , .png"
+                  />
                 </Col>
               </Form.Group>
 

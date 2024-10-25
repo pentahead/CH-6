@@ -1,4 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -10,9 +11,42 @@ export const Route = createLazyFileRoute("/login")({
 });
 
 function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    // hit the login API
+
+    // define req body
+    const body = {
+      email,
+      password,
+    };
+
+    const response = await fetch("http://localhost:4000/auth/login", {
+      body: JSON.stringify(body),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      localStorage.setItem("token", result.data.data.token);
+      console.log(result);
+      alert(result.data.message);
+      return;
+    }
+
+    alert(result.errors);
+  };
+
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div className="d-flex justify-content-center align-items-center vh-100 ">
       <div style={{ maxWidth: "650px", width: "100%" }}>
+        <h1>{password}</h1>
         <Card className="shadow-lg">
           <Card.Header className="text-center bg-primary text-white fs-4 fw-bold">
             Welcome Back!
@@ -21,21 +55,35 @@ function Login() {
             <Card.Title className="text-center fs-5 mb-4">
               Login to Your Account
             </Card.Title>
-            <Form>
-              <Form.Group as={Row} className="mb-3" controlId="formEmail">
+            <Form onSubmit={onSubmit}>
+              <Form.Group as={Row} className="mb-3" controlId="email">
                 <Form.Label column sm="3" className="fw-semibold">
                   Email
                 </Form.Label>
                 <Col sm="9">
-                  <Form.Control type="email" placeholder="Enter email" />
+                  <Form.Control
+                    type="email"
+                    placeholder="Enter email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
+                  />
                 </Col>
               </Form.Group>
-              <Form.Group as={Row} className="mb-4" controlId="formPassword">
+              <Form.Group as={Row} className="mb-4" controlId="password">
                 <Form.Label column sm="3" className="fw-semibold">
                   Password
                 </Form.Label>
                 <Col sm="9">
-                  <Form.Control type="password" placeholder="Enter password" />
+                  <Form.Control
+                    type="password"
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                    }}
+                  />
                 </Col>
               </Form.Group>
               <Button variant="primary" type="submit" className="w-100 fw-bold">
