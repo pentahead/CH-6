@@ -4,7 +4,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const Route = createLazyFileRoute("/register")({
   component: Register,
@@ -16,7 +16,13 @@ function Register() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profilePicture, setProfilePicture] = useState("");
-
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      // redirect to dashboard
+      window.location = "/";
+    }
+  }, []);
   const onSubmit = async (e) => {
     e.preventDefault();
     if (password != confirmPassword) {
@@ -29,10 +35,13 @@ function Register() {
     formData.append("password", password);
     formData.append("profilePicture", profilePicture);
 
-    const response = await fetch("http://localhost:4000/auth/register", {
-      method: "POST",
-      body: formData,
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/auth/register`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
     const result = await response.json();
     if (result.success) {
       localStorage.setItem("token", result.data.data.token);

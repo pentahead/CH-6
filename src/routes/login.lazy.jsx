@@ -1,5 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -13,7 +13,14 @@ export const Route = createLazyFileRoute("/login")({
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  useEffect(() => {
+    const token = localStorage.getItem("token");
 
+    if (token) {
+      // redirect to dashboard
+      window.location = "/";
+    }
+  }, []);
   const onSubmit = async (e) => {
     e.preventDefault();
     // hit the login API
@@ -24,7 +31,7 @@ function Login() {
       password,
     };
 
-    const response = await fetch("http://localhost:4000/auth/login", {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
       body: JSON.stringify(body),
       method: "POST",
       headers: {
@@ -37,6 +44,8 @@ function Login() {
       localStorage.setItem("token", result.data.data.token);
       console.log(result);
       alert(result.data.message);
+      //redirect to home
+      window.location = "/";
       return;
     }
 
@@ -46,7 +55,7 @@ function Login() {
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 ">
       <div style={{ maxWidth: "650px", width: "100%" }}>
-        <h1>{password}</h1>
+        {/* <h1>{password}</h1> */}
         <Card className="shadow-lg">
           <Card.Header className="text-center bg-primary text-white fs-4 fw-bold">
             Welcome Back!
