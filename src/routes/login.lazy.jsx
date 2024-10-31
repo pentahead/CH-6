@@ -5,12 +5,14 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+// import { useDispatch } from "react-router-dom";
 
 export const Route = createLazyFileRoute("/login")({
   component: Login,
 });
 
 function Login() {
+  // const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   useEffect(() => {
@@ -41,6 +43,7 @@ function Login() {
 
     const result = await response.json();
     if (result.success) {
+      // dispatch(setToken(result.data.token));
       localStorage.setItem("token", result.data.data.token);
       console.log(result);
       alert(result.data.message);

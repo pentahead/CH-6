@@ -15,7 +15,7 @@ const NavigationBar = () => {
     if (token) {
       // hit api auth get profile and pass the token to the function
       getProfile(token);
-    } 
+    }
   }, []);
 
   const getProfile = async (token) => {
@@ -42,7 +42,6 @@ const NavigationBar = () => {
 
     //jika token yang dimasukan tidak valid/ngawur
     localStorage.removeItem("token");
-
     //redirect to login
     window.location = "/login";
   };
