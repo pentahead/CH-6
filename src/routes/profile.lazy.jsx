@@ -1,47 +1,22 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import { Row, Col, Card } from "react-bootstrap";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 export const Route = createLazyFileRoute("/profile")({
   component: Profile,
 });
 
 function Profile() {
-  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  const { user, token } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    // get token from local storage
-    const token = localStorage.getItem("token");
     if (!token) {
-      window.location = "/login";
-    } else {
-      // hit api auth get profile and pass the token to the function
-      getProfile(token);
+      navigate({ to: "/login" });
     }
-  }, []);
+  }, [navigate, token]);
 
-  const getProfile = async (token) => {
-    // fetch get profile
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/auth/profile`,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-        method: "GET",
-      }
-    );
-
-    // get data
-    const result = await response.json();
-    if (result.success) {
-      // set the user state here
-      setUser(result.data);
-      return;
-    }
-
-    alert(result.message);
-  };
   return (
     <Row className="mt-5">
       <Col className="offset-md-3">

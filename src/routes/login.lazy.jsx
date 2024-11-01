@@ -1,18 +1,21 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-// import { useDispatch } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setToken } from "../redux/slices/auth";
 
 export const Route = createLazyFileRoute("/login")({
   component: Login,
 });
 
 function Login() {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   useEffect(() => {
@@ -20,13 +23,12 @@ function Login() {
 
     if (token) {
       // redirect to dashboard
-      window.location = "/";
+      navigate({ to: "/" });
     }
-  }, []);
+  }, [navigate]);
   const onSubmit = async (e) => {
     e.preventDefault();
     // hit the login API
-
     // define req body
     const body = {
       email,
@@ -43,12 +45,13 @@ function Login() {
 
     const result = await response.json();
     if (result.success) {
-      // dispatch(setToken(result.data.token));
-      localStorage.setItem("token", result.data.data.token);
+      dispatch(setToken(result.data.data.token));
+      // localStorage.setItem("token", result.data.data.token);
       console.log(result);
       alert(result.data.message);
+
       //redirect to home
-      window.location = "/";
+      navigate({ to: "/" });
       return;
     }
 

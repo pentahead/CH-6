@@ -1,16 +1,20 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 
 export const Route = createLazyFileRoute("/register")({
   component: Register,
 });
 
 function Register() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,9 +24,9 @@ function Register() {
     const token = localStorage.getItem("token");
     if (token) {
       // redirect to dashboard
-      window.location = "/";
+      navigate({ to: "/" });
     }
-  }, []);
+  }, [navigate]);
   const onSubmit = async (e) => {
     e.preventDefault();
     if (password != confirmPassword) {
@@ -44,9 +48,11 @@ function Register() {
     );
     const result = await response.json();
     if (result.success) {
-      localStorage.setItem("token", result.data.data.token);
+      // localStorage.setItem("token", result.data.data.token);
+
       console.log(result);
       alert(result.data.message);
+      navigate({ to: "/login" });
       return;
     }
 
