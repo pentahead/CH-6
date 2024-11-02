@@ -5,51 +5,43 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { register } from "../service/auth";
 
 export const Route = createLazyFileRoute("/register")({
   component: Register,
 });
 
 function Register() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { token } = useSelector((state) => state.auth);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [profilePicture, setProfilePicture] = useState("");
+  const [profilePicture, setProfilePicture] = useState(undefined);
   useEffect(() => {
-    const token = localStorage.getItem("token");
     if (token) {
-      // redirect to dashboard
+      // redirect to home
       navigate({ to: "/" });
     }
-  }, [navigate]);
+  }, [token, navigate]);
   const onSubmit = async (e) => {
     e.preventDefault();
     if (password != confirmPassword) {
       alert("Passwords do not match");
     }
-
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("password", password);
-    formData.append("profilePicture", profilePicture);
-
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/auth/register`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-    const result = await response.json();
+    // hit API here
+    const request = {
+      name,
+      email,
+      password,
+      profilePicture,
+    };
+    const result = await register(request);
     if (result.success) {
       // localStorage.setItem("token", result.data.data.token);
-
       console.log(result);
       alert(result.data.message);
       navigate({ to: "/login" });

@@ -5,8 +5,9 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setToken } from "../redux/slices/auth";
+import { login } from "../service/auth";
 
 export const Route = createLazyFileRoute("/login")({
   component: Login,
@@ -16,11 +17,11 @@ function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { token } = useSelector((state) => state.auth);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
     if (token) {
       // redirect to dashboard
       navigate({ to: "/" });
@@ -34,16 +35,7 @@ function Login() {
       email,
       password,
     };
-
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-      body: JSON.stringify(body),
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const result = await response.json();
+    const result = await login(body);
     if (result.success) {
       dispatch(setToken(result.data.data.token));
       // localStorage.setItem("token", result.data.data.token);

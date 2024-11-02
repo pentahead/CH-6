@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Navbar, Nav, Container, Image } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken, setUser } from "../../redux/slices/auth";
+import { profile } from "../../service/auth";
 
 const NavigationBar = () => {
   const dispatch = useDispatch();
@@ -13,18 +14,7 @@ const NavigationBar = () => {
   useEffect(() => {
     const getProfile = async (token) => {
       // fetch get profile
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/auth/profile`,
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-          method: "GET",
-        }
-      );
-
-      // get data
-      const result = await response.json();
+      const result = await profile(token);
       if (result.success) {
         // set the user state here
         dispatch(setUser(result.data));
